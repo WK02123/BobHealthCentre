@@ -231,6 +231,7 @@ class Ui_Form(object):
             # If successful, store additional doctor details in the database
             doctor_data = {
                 "email": email,
+                "password": password,
                 "username": username,
                 "specialty": specialty,
                 "language": language,
