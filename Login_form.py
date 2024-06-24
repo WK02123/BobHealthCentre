@@ -9,23 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import pyrebase
-
-firebaseConfig = {
-    "apiKey": "AIzaSyDh6tLW3lCovQ2j1YZ0dklbppIhHZXUEJE",
-    "authDomain": "bobclinic-e2804.firebaseapp.com",
-    "databaseURL": "https://bobclinic-e2804-default-rtdb.firebaseio.com",
-    "projectId": "bobclinic-e2804",
-    "storageBucket": "bobclinic-e2804.appspot.com",
-    "messagingSenderId": "812876084670",
-    "appId": "1:812876084670:web:8ebc63b1694b68f59d75ef",
-    "measurementId": "G-9ZFHMKE2FK"
-}
-
-firebase = pyrebase.initialize_app(firebaseConfig)
-auth = firebase.auth()
-db = firebase.database()
-
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -147,9 +130,6 @@ class Ui_Form(object):
         self.b3.setObjectName("b3")
 
         self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
-
-        self.b1.clicked.connect(self.login)  # Connect login button to login function
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -161,18 +141,6 @@ class Ui_Form(object):
         self.label_2.setText(_translate("Form", "New User Sign Up!!!"))
         self.b2.setText(_translate("Form", "R e g i s t e r     N o w"))
         self.b3.setText(_translate("Form", "D o c t o r"))
-
-    def login(self):
-        username = self.lineEdit.text()
-        password = self.lineEdit_2.text()
-
-        try:
-            user = auth.sign_in_with_email_and_password(username, password)
-            print("Successfully logged in:", user['localId'])  # Replace with your desired success action
-            # Add code to handle successful login (e.g., opening a new window or showing a success message)
-        except Exception as e:
-            print("Login failed:", e)  # Replace with your desired error handling
-            # Add code to handle login failure (e.g., showing an error message to the user)
 
 
 if __name__ == "__main__":
