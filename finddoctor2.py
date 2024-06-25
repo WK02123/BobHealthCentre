@@ -1,10 +1,33 @@
+import sys
 import tkinter as tk
 from tkinter import Text
 from PIL import Image, ImageTk
 import subprocess
+import pyrebase
+
+# Firebase configuration
+firebaseConfig = {
+    "apiKey": "AIzaSyDh6tLW3lCovQ2j1YZ0dklbppIhHZXUEJE",
+    "authDomain": "bobclinic-e2804.firebaseapp.com",
+    "databaseURL": "https://bobclinic-e2804-default-rtdb.firebaseio.com",
+    "projectId": "bobclinic-e2804",
+    "storageBucket": "bobclinic-e2804.appspot.com",
+    "messagingSenderId": "812876084670",
+    "appId": "1:812876084670:web:8ebc63b1694b68f59d75ef",
+    "measurementId": "G-9ZFHMKE2FK"
+}
+
+# Initialize Firebase
+firebase = pyrebase.initialize_app(firebaseConfig)
+db = firebase.database()
+
 class Ui_Form:
-    def setupUi(self, Form):
+    def setupUi(self, Form, user_id, token, user_email):
         self.Form = Form
+        self.user_id = user_id
+        self.token = token
+        self.user_email = user_email
+
         Form.title("Form")
         Form.geometry("1125x786")
 
@@ -18,7 +41,7 @@ class Ui_Form:
         self.widget_3.place(x=0, y=0, width=1131, height=131)
 
         # Load the image using Pillow (adjust path accordingly)
-        self.image = Image.open("/Users/kean/Pyqt5_clinic/360_F_120571823_uUoCUfnSuxzEgOPj6FQ1nxCHNAw562Fq 2.jpg")
+        self.image = Image.open("C:/BobHealthCentre/.venv/header.jpg")
         self.bg_image = ImageTk.PhotoImage(self.image)
 
         # Create a label and set the image
@@ -54,10 +77,10 @@ class Ui_Form:
         self.label_4.place(x=20, y=450, width=1031, height=111)
 
         self.textEdit = Text(self.widget_4, bg='#FFFFFF', font=("MS Shell Dlg 2", 10))
-        self.textEdit.place(x=40, y=105, width=791, height=81)
+        self.textEdit.place(x=40, y=105, width=980, height=81)
 
         self.textEdit_2 = Text(self.widget_4, bg='#FFFFFF', font=("MS Shell Dlg 2", 10))
-        self.textEdit_2.place(x=40, y=225, width=791, height=81)
+        self.textEdit_2.place(x=40, y=225, width=980, height=81)
 
         self.b2 = tk.Button(self.widget_2, text="Appointment List", bg='#FFBF10', fg='#873C00',
                             font=(".AppleSystemUIFont", 12, 'bold'), command=self.button2)
@@ -75,24 +98,10 @@ class Ui_Form:
                             font=(".AppleSystemUIFont", 12, 'bold'), command=self.button4)
         self.b4.place(x=940, y=140, width=141, height=41)
 
-        self.b6 = tk.Button(self.widget_2, text="select", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button5)
-        self.b6.place(x=900, y=330, width=141, height=41)
-
-        self.b7 = tk.Button(self.widget_2, text="select", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button6)
-        self.b7.place(x=900, y=450, width=141, height=41)
-
-        self.b8 = tk.Button(self.widget_2, text="select", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button7)
-        self.b8.place(x=900, y=565, width=141, height=41)
-
-        self.b9 = tk.Button(self.widget_2, text="select", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button8)
-        self.b9.place(x=900, y=685, width=141, height=41)
-
         self.selected_doctors = []
 
+        # Retrieve and display doctors in Clinic 2
+        self.display_doctors_in_clinic2()
 
     def make_appointment(self):
         print("Make Appointment button clicked")
@@ -103,7 +112,8 @@ class Ui_Form:
     def open_find_doc1(self):
         self.Form.withdraw()  # Hide the current form
         python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"  # Adjust the path to your virtual environment's Python executable
-        subprocess.call([python_executable, "C:/BobHealthCentre/.venv/finddoctor.py"])  # Open finddoctor2.py
+        subprocess.call([python_executable, "C:/BobHealthCentre/.venv/finddoctor.py", self.user_id, self.token,
+                         self.user_email])  # Open finddoctor.py
 
     def button1(self):
         print("Button 1 clicked")
@@ -117,29 +127,44 @@ class Ui_Form:
     def button4(self):
         print("Button 4 clicked")
 
-    def button5(self):
-        doctor_info = self.textEdit.get("1.0", tk.END).strip()
-        self.selected_doctors.append(doctor_info)
-        print(f"Doctor selected: {doctor_info}")
+    def display_doctors_in_clinic2(self):
+        # Retrieve doctors in Clinic 2 from the database
+        clinic2_doctors = db.child("doctors").get().val()
+        clinic2_doctor_details = []
+        if clinic2_doctors:
+            for doctor_id, doctor_info in clinic2_doctors.items():
+                if doctor_info.get("clinic_id") == "clinic2":
+                    doctor_details = f"Name: {doctor_info['username']}\nSpecialty: {doctor_info['specialty']}\nLanguage: {doctor_info['language']}\n\n"
+                    clinic2_doctor_details.append(doctor_details)
 
-    def button6(self):
-        doctor_info = self.textEdit_2.get("1.0", tk.END).strip()
-        self.selected_doctors.append(doctor_info)
-        print(f"Doctor selected: {doctor_info}")
-
-    def button7(self):
-        doctor_info = self.textEdit_3.get("1.0", tk.END).strip()
-        self.selected_doctors.append(doctor_info)
-        print(f"Doctor selected: {doctor_info}")
-
-    def button8(self):
-        doctor_info = self.textEdit_4.get("1.0", tk.END).strip()
-        self.selected_doctors.append(doctor_info)
-        print(f"Doctor selected: {doctor_info}")
-
+            # Display doctor details in text widget
+            for i, details in enumerate(clinic2_doctor_details):
+                if i == 0:
+                    self.textEdit.insert(tk.END, details)
+                elif i == 1:
+                    self.textEdit_2.insert(tk.END, details)
+                elif i == 2:
+                    self.textEdit_3.insert(tk.END, details)
+                elif i == 3:
+                    self.textEdit_4.insert(tk.END, details)
+        else:
+            print("No doctors found in Clinic 2.")
 
 if __name__ == "__main__":
+    if len(sys.argv) != 4:
+        print("Usage: finddoctor.py <user_id> <token> <user_email>")
+        sys.exit(1)
+
+    user_id = sys.argv[1]
+    token = sys.argv[2]
+    user_email = sys.argv[3]
+
+    # For debugging: print the arguments to verify
+    print(f"user_id: {user_id}")
+    print(f"token: {token}")
+    print(f"user_email: {user_email}")
+
     root = tk.Tk()
     ui = Ui_Form()
-    ui.setupUi(root)
+    ui.setupUi(root, user_id, token, user_email)
     root.mainloop()
