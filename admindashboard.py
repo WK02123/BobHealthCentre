@@ -74,7 +74,7 @@ def update_requests_table():
         tree.insert('', 'end', values=(
             request['appointment_id'], request['patient_name'], request['clinic_name'], request['doctor_name'], request['request_date'], request['status']))
 
-def main():
+def main(token, user_email):
     global root, tree, requests_data
 
     requests_data = fetch_appointments()

@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import pyrebase
 from profilepage import Ui_ProfilePage
 from doctordashboard import DoctorDashboard
+from admindashboard import main
 import sys
 import tkinter as tk
 
@@ -188,10 +189,29 @@ class Ui_Form(object):
                             print("User role not found or invalid for doctors.")
                         return
 
+            admin_info = db.child("admin").order_by_child("email").equal_to(email).get(token).val()
+            if admin_info:
+                for key, value in admin_info.items():
+                    if value['email'] == email:
+                        print(f"Successfully logged in as admin: {value}")
+                        self.open_admindashboard_page(token, user_email)
+                    else:
+                        print("User role not found or invalid for admin.")
+                        return
+
             print("User not found in both users and doctors branches.")
 
         except Exception as e:
             print("Login failed:", e)
+
+    def open_admindashboard_page(self, token, user_email):
+        try:
+            self.admin_dashboard_window = QtWidgets.QMainWindow()
+            self.admin_dashboard = main(token, user_email)  # Pass token and user_email to main
+            self.admin_dashboard.setupUi(self.admin_dashboard_window)
+            self.admin_dashboard_window.show()
+        except Exception as e:
+            print("Failed to open admin dashboard page:", e)
 
     def open_profile_page(self, user_id, token, user_email):
         try:
