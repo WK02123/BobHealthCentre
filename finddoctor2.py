@@ -21,17 +21,20 @@ firebaseConfig = {
 firebase = pyrebase.initialize_app(firebaseConfig)
 db = firebase.database()
 
-class Ui_Form:
-    def setupUi(self, Form, user_id, token, user_email):
-        self.Form = Form
+class Ui_Form(object):
+    def __init__(self, root, user_id, token, user_email, username):
+        self.root = root  # Assign the root widget to self.root
         self.user_id = user_id
         self.token = token
         self.user_email = user_email
+        self.username = username
+        self.setupUi()
 
-        Form.title("Form")
-        Form.geometry("1125x786")
+    def setupUi(self):
+        self.root.title("Form")
+        self.root.geometry("1125x786")
 
-        self.widget_2 = tk.Frame(Form, bg='#D0FDFF')
+        self.widget_2 = tk.Frame(self.root, bg='#D0FDFF')
         self.widget_2.place(x=0, y=0, width=1131, height=811)
         self.widget_2.config(highlightbackground="black", highlightthickness=2)
 
@@ -51,8 +54,8 @@ class Ui_Form:
         self.widget_4 = tk.Frame(self.widget_2, bg='#FFFFFF')
         self.widget_4.place(x=20, y=200, width=1081, height=581)
 
-        clinic_label = tk.Label(self.widget_3, text="Clinic 2", font=("Arial", 24), bg='#D0FDFF', fg='#000000')
-        clinic_label.place(x=65, y=95, width=100, height=32)
+        clinic_label = tk.Label(self.widget_3, text="Klinik Mediviron", font=("Arial", 24), bg='#D0FDFF', fg='#000000')
+        clinic_label.place(x=65, y=95, width=400, height=32)
 
         self.b5 = tk.Button(self.widget_4, text="Make Appointment", bg='#FFBF10', fg='#873C00',
                             font=(".AppleSystemUIFont", 12, 'bold'), command=self.make_appointment)
@@ -82,20 +85,22 @@ class Ui_Form:
         self.textEdit_2 = Text(self.widget_4, bg='#FFFFFF', font=("MS Shell Dlg 2", 10))
         self.textEdit_2.place(x=40, y=225, width=980, height=81)
 
-        self.b2 = tk.Button(self.widget_2, text="Appointment List", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button2)
-        self.b2.place(x=40, y=150, width=141, height=41)
+        self.textEdit_3 = Text(self.widget_4, bg='#FFFFFF', font=("MS Shell Dlg 2", 10))
+        self.textEdit_3.place(x=40, y=345, width=980, height=81)
 
-        self.b3 = tk.Button(self.widget_2, text="find Doctor", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button3)
-        self.b3.place(x=210, y=150, width=141, height=41)
+        self.textEdit_4 = Text(self.widget_4, bg='#FFFFFF', font=("MS Shell Dlg 2", 10))
+        self.textEdit_4.place(x=40, y=465, width=980, height=81)
+
+        self.b2 = tk.Button(self.widget_2, text="Appointment List", bg='#FFBF10', fg='#873C00',
+                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.open_appointment_list)
+        self.b2.place(x=40, y=150, width=141, height=41)
 
         self.b1 = tk.Button(self.widget_2, text="Profile", bg='#FFBF10', fg='#873C00',
                             font=(".AppleSystemUIFont", 12, 'bold'), command=self.button1)
-        self.b1.place(x=380, y=150, width=141, height=41)
+        self.b1.place(x=210, y=150, width=141, height=41)
 
         self.b4 = tk.Button(self.widget_2, text="Log out", bg='#FFBF10', fg='#873C00',
-                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.button4)
+                            font=(".AppleSystemUIFont", 12, 'bold'), command=self.logout_user)
         self.b4.place(x=940, y=140, width=141, height=41)
 
         self.selected_doctors = []
@@ -105,15 +110,19 @@ class Ui_Form:
 
     def make_appointment(self):
         print("Make Appointment button clicked")
+        self.root.withdraw()  # Hide the current form
+        python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"  # Adjust path as necessary
+        subprocess.call([python_executable, "C:/BobHealthCentre/.venv/makeappointment.py", self.user_id, self.token,
+                         self.user_email,self.username])
 
     def clinic1(self):
         print("Clinic 1 button clicked")
 
     def open_find_doc1(self):
-        self.Form.withdraw()  # Hide the current form
+        self.root.withdraw()  # Hide the current form
         python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"  # Adjust the path to your virtual environment's Python executable
         subprocess.call([python_executable, "C:/BobHealthCentre/.venv/finddoctor.py", self.user_id, self.token,
-                         self.user_email])  # Open finddoctor.py
+                         self.user_email,self.username])  # Open finddoctor.py
 
     def button1(self):
         print("Button 1 clicked")
@@ -124,8 +133,20 @@ class Ui_Form:
     def button3(self):
         print("Button 3 clicked")
 
-    def button4(self):
-        print("Button 4 clicked")
+    def logout_user(self):
+        print("Logging out...")
+        self.root.destroy()
+
+    def open_appointment_list(self):
+        print("Opening Appointment List")
+        self.root.destroy()
+        python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"  # Adjust path as necessary
+        script_path = "C:/BobHealthCentre/.venv/appointmentlist.py"  # Adjust path as necessary
+
+        # Ensure arguments are passed correctly as a list
+        arguments = [python_executable, script_path, self.user_id, self.user_email, self.token, self.username]
+
+        subprocess.call(arguments)
 
     def display_doctors_in_clinic2(self):
         # Retrieve doctors in Clinic 2 from the database
@@ -151,20 +172,24 @@ class Ui_Form:
             print("No doctors found in Clinic 2.")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: finddoctor.py <user_id> <token> <user_email>")
+    if len(sys.argv) != 5:
+        print("Usage: finddoctor2.py <user_id> <token> <user_email> <username>")
         sys.exit(1)
 
     user_id = sys.argv[1]
     token = sys.argv[2]
     user_email = sys.argv[3]
+    username = sys.argv[4]
 
-    # For debugging: print the arguments to verify
     print(f"user_id: {user_id}")
     print(f"token: {token}")
     print(f"user_email: {user_email}")
+    print(f"username: {username}")
 
     root = tk.Tk()
-    ui = Ui_Form()
-    ui.setupUi(root, user_id, token, user_email)
+    ui = Ui_Form(root, user_id, token, user_email, username)  # Pass root here
     root.mainloop()
+
+
+
+

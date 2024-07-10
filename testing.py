@@ -1,145 +1,153 @@
-import pyrebase
-import tkinter as tk
-from tkinter import ttk
-from PIL import Image, ImageTk
+from PyQt5 import QtCore, QtGui, QtWidgets
+from login import Ui_Form as HomepageUi_form    # Import your login window
 
-# Firebase configuration
-firebaseConfig = {
-    "apiKey": "AIzaSyDh6tLW3lCovQ2j1YZ0dklbppIhHZXUEJE",
-    "authDomain": "bobclinic-e2804.firebaseapp.com",
-    "databaseURL": "https://bobclinic-e2804-default-rtdb.firebaseio.com",
-    "projectId": "bobclinic-e2804",
-    "storageBucket": "bobclinic-e2804.appspot.com",
-    "messagingSenderId": "812876084670",
-    "appId": "1:812876084670:web:8ebc63b1694b68f59d75ef",
-    "measurementId": "G-9ZFHMKE2FK"
-}
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(1102, 777)
+        self.widget_2 = QtWidgets.QWidget(Form)
+        self.widget_2.setGeometry(QtCore.QRect(0, 0, 1131, 811))
+        font = QtGui.QFont()
+        font.setFamily("Academy Engraved LET")
+        font.setBold(False)
+        self.widget_2.setFont(font)
+        self.widget_2.setStyleSheet("background-color: rgb(208, 253, 255);\n"
+                                    "border-radius:20px;")
+        self.widget_2.setObjectName("widget_2")
+        self.widget_3 = QtWidgets.QWidget(self.widget_2)
+        self.widget_3.setGeometry(QtCore.QRect(-20, 0, 1151, 131))
+        self.widget_3.setStyleSheet("background-image: url(:/newPrefix/360_F_120571823_uUoCUfnSuxzEgOPj6FQ1nxCHNAw562Fq 2.jpg);")
+        self.widget_3.setObjectName("widget_3")
+        self.widget_4 = QtWidgets.QWidget(self.widget_2)
+        self.widget_4.setGeometry(QtCore.QRect(20, 200, 1081, 581))
+        self.widget_4.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.widget_4.setObjectName("widget_4")
+        self.widget = QtWidgets.QWidget(self.widget_4)
+        self.widget.setGeometry(QtCore.QRect(640, 300, 281, 231))
+        self.widget.setStyleSheet("background-image: url(:/newPrefix/health-care-landing-page-vector-template-diagnostics-clinic-hospital-website-homepage-ui-layout-with-isometric-illustration-healthcare-industry-medical-service-web-banner-webpage-3d-concept-2c7rrjy 2.jpg);")
+        self.widget.setObjectName("widget")
+        self.textEdit_3 = QtWidgets.QTextEdit(self.widget_4)
+        self.textEdit_3.setGeometry(QtCore.QRect(90, 250, 361, 61))
+        self.textEdit_3.setObjectName("textEdit_3")
+        self.textEdit = QtWidgets.QTextEdit(self.widget_4)
+        self.textEdit.setGeometry(QtCore.QRect(30, 320, 101, 231))
+        self.textEdit.setObjectName("textEdit")
+        self.textEdit_4 = QtWidgets.QTextEdit(self.widget_4)
+        self.textEdit_4.setGeometry(QtCore.QRect(200, 320, 141, 181))
+        self.textEdit_4.setObjectName("textEdit_4")
+        self.textEdit_5 = QtWidgets.QTextEdit(self.widget_4)
+        self.textEdit_5.setGeometry(QtCore.QRect(410, 320, 111, 181))
+        self.textEdit_5.setObjectName("textEdit_5")
+        self.widget_5 = QtWidgets.QWidget(self.widget_4)
+        self.widget_5.setGeometry(QtCore.QRect(630, 90, 281, 191))
+        self.widget_5.setStyleSheet("background-image: url(:/newPrefix/images-2.jpeg);")
+        self.widget_5.setObjectName("widget_5")
+        self.textEdit_6 = QtWidgets.QTextEdit(self.widget_4)
+        self.textEdit_6.setGeometry(QtCore.QRect(120, 30, 321, 51))
+        self.textEdit_6.setObjectName("textEdit_6")
+        self.textEdit_7 = QtWidgets.QTextEdit(self.widget_4)
+        self.textEdit_7.setGeometry(QtCore.QRect(20, 110, 561, 131))
+        self.textEdit_7.setObjectName("textEdit_7")
+        self.b4 = QtWidgets.QPushButton(self.widget_2)
+        self.b4.setGeometry(QtCore.QRect(920, 150, 141, 41))
+        font = QtGui.QFont()
+        font.setFamily(".AppleSystemUIFont")
+        font.setBold(True)
+        font.setItalic(False)
+        font.setUnderline(False)
+        self.b4.setFont(font)
+        self.b4.setStyleSheet("QPushButton#b4{\n"
+                              "background-color:rgb(255,191,16);\n"
+                              "color:rgb(135,60,0);\n"
+                              "border-radius:5px;\n"
+                              "}\n"
+                              "\n"
+                              "QPushButton#b4:pressed{\n"
+                              "background-color:rgb(255,255,16);\n"
+                              "}\n"
+                              "")
+        self.b4.setObjectName("b4")
+        self.textEdit_2 = QtWidgets.QTextEdit(self.widget_2)
+        self.textEdit_2.setGeometry(QtCore.QRect(380, 140, 361, 61))
+        self.textEdit_2.setObjectName("textEdit_2")
 
-# Initialize Firebase
-firebase = pyrebase.initialize_app(firebaseConfig)
-db = firebase.database()
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
 
-# Declare tree globally
-tree = None
+        # Connect the Sign Up button to open login page
 
-def fetch_appointments():
-    try:
-        appointments = db.child("appointments").get().val()
-        if appointments:
-            return [
-                {
-                    'appointment_id': key,
-                    'clinic_name': value.get('clinic_name', 'Unknown'),
-                    'doctor_name': value.get('doctor_name', 'Unknown'),
-                    'patient_name': value.get('patient_name', 'Unknown'),
-                    'request_date': value.get('appointment_date', 'Unknown'),
-                    'status': value.get('status', 'Pending')
-                }
-                for key, value in appointments.items()
-            ]
-        else:
-            return []
-    except Exception as e:
-        print(f"Failed to fetch appointments: {e}")
-        return []
 
-def accept_request(event):
-    selected_item = tree.focus()
-    if selected_item:
-        appointment_id = tree.item(selected_item, 'values')[0]
-        for request in requests_data:
-            if request['appointment_id'] == appointment_id:
-                request['status'] = 'Accepted'
-                db.child("appointments").child(appointment_id).update({"status": "Accepted"})
-                break
-        update_requests_table()
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.textEdit_3.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                              "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                              "p, li { white-space: pre-wrap; }\n"
+                                              "hr { height: 1px; border-width: 0; }\n"
+                                              "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                              "li.checked::marker { content: \"\\2612\"; }\n"
+                                              "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                              "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:36pt; font-weight:700; text-decoration: underline; color:#b2cdf9;\">Health Care</span></p></body></html>"))
+        self.textEdit.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                          "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                          "p, li { white-space: pre-wrap; }\n"
+                                          "hr { height: 1px; border-width: 0; }\n"
+                                          "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                          "li.checked::marker { content: \"\\2612\"; }\n"
+                                          "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                          "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700;\">We always Put Our Patients First We treat patients from all walks of life, with quality and affordable treatment options for everyone</span></p></body></html>"))
+        self.textEdit_4.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                        "p, li { white-space: pre-wrap; }\n"
+                                        "hr { height: 1px; border-width: 0; }\n"
+                                        "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                        "li.checked::marker { content: \"\\2612\"; }\n"
+                                        "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700;\">Our doctors have been practicing medicine for over 10 years, with vast knowledge and experience in dermatology, ophthalmology, gynaecology, and aesthetic medicine.</span></p></body></html>"))
+        self.textEdit_5.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                        "p, li { white-space: pre-wrap; }\n"
+                                        "hr { height: 1px; border-width: 0; }\n"
+                                        "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                        "li.checked::marker { content: \"\\2612\"; }\n"
+                                        "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:700;\">Dr. A Clinic has all sort of health plans and payment methods available. Talk to our friendly consultants for more information!</span></p></body></html>"))
+        self.textEdit_6.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                        "p, li { white-space: pre-wrap; }\n"
+                                        "hr { height: 1px; border-width: 0; }\n"
+                                        "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                        "li.checked::marker { content: \"\\2612\"; }\n"
+                                        "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:36pt; font-weight:700; color:#000000;\">WELCOME</span></p></body></html>"))
+        self.textEdit_7.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                        "p, li { white-space: pre-wrap; }\n"
+                                        "hr { height: 1px; border-width: 0; }\n"
+                                        "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                        "li.checked::marker { content: \"\\2612\"; }\n"
+                                        "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'VisbyCf\',\'sans-serif\'; font-size:16px; font-weight:700; color:#008080; background-color:#ffffff;\">A Klinik Signature is an Aesthetic Clinic in Penang.</span></p>\n"
+                                        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'VisbyCf\',\'sans-serif\'; font-size:16px; font-weight:700; color:#008080; background-color:#ffffff;\">We offer a range of aesthetic services to help you achieve your desired look.</span></p>\n"
+                                        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'VisbyCf\',\'sans-serif\'; font-size:16px; font-weight:700; color:#008080; background-color:#ffffff;\">Our clinic provides aesthetic services to help improve your skin and enhance your appearance</span></p>\n"
+                                        "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:700;\"><br /></p></body></html>"))
+        self.b4.setText(_translate("Form", "Sign Up"))
+        self.textEdit_2.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                        "p, li { white-space: pre-wrap; }\n"
+                                        "hr { height: 1px; border-width: 0; }\n"
+                                        "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                        "li.checked::marker { content: \"\\2612\"; }\n"
+                                        "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                        "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:36pt; font-weight:700; font-style:italic; text-decoration: underline;\">BobHealthCentre</span></p></body></html>"))
+import pic3_rc
 
-def reject_request(event):
-    selected_item = tree.focus()
-    if selected_item:
-        appointment_id = tree.item(selected_item, 'values')[0]
-        for request in requests_data:
-            if request['appointment_id'] == appointment_id:
-                request['status'] = 'Rejected'
-                db.child("appointments").child(appointment_id).update({"status": "Rejected"})
-                break
-        update_requests_table()
-
-def logout():
-    root.destroy()
-
-def update_requests_table():
-    for row in tree.get_children():
-        tree.delete(row)
-    for request in requests_data:
-        tree.insert('', 'end', values=(
-            request['appointment_id'], request['patient_name'], request['clinic_name'], request['doctor_name'], request['request_date'], request['status']))
-
-def navigate_to_page1():
-    print("Navigating to Page 1")
-
-def navigate_to_page2():
-    print("Navigating to Page 2")
-
-def navigate_to_page3():
-    print("Navigating to Page 3")
-
-def main():
-    global root, tree, requests_data, header_bg_image
-
-    requests_data = fetch_appointments()
-
-    root = tk.Tk()
-    root.title("Clinic Admin Dashboard")
-    root.geometry("800x600")
-
-    # Load background image for header
-    header_image = Image.open("header.jpg")
-    header_bg_image = ImageTk.PhotoImage(header_image)
-
-    header_frame = tk.Label(root, image=header_bg_image)
-    header_frame.pack(side=tk.TOP, fill=tk.X)
-
-    # Add buttons to header
-    button1 = ttk.Button(header_frame, text="Page 1", command=navigate_to_page1)
-    button2 = ttk.Button(header_frame, text="Page 2", command=navigate_to_page2)
-    button3 = ttk.Button(header_frame, text="Page 3", command=navigate_to_page3)
-
-    button1.place(x=10, y=100)
-    button2.place(x=90, y=100)
-    button3.place(x=700, y=10)
-
-    tree = ttk.Treeview(root, columns=('Appointment ID', 'Patient Name', 'Clinic Name', 'Doctor Name', 'Request Date', 'Status'), show='headings')
-    tree.heading('Appointment ID', text='Appointment ID')
-    tree.heading('Patient Name', text='Patient Name')
-    tree.heading('Clinic Name', text='Clinic Name')
-    tree.heading('Doctor Name', text='Doctor Name')
-    tree.heading('Request Date', text='Request Date')
-    tree.heading('Status', text='Status')
-
-    tree.column('Appointment ID', width=100, anchor='center')
-    tree.column('Patient Name', width=120, anchor='center')
-    tree.column('Clinic Name', width=120, anchor='center')
-    tree.column('Doctor Name', width=120, anchor='center')
-    tree.column('Request Date', width=100, anchor='center')
-    tree.column('Status', width=80, anchor='center')
-
-    update_requests_table()
-    tree.pack(expand=tk.YES, fill=tk.BOTH, padx=10, pady=10)
-
-    button_frame = tk.Frame(root)
-    button_frame.pack(side=tk.RIGHT, padx=10, pady=10)
-
-    reject_button = ttk.Button(button_frame, text="Reject")
-    accept_button = ttk.Button(button_frame, text="Accept")
-
-    reject_button.pack(side=tk.RIGHT, padx=5)
-    accept_button.pack(side=tk.RIGHT, padx=5)
-
-    reject_button.bind("<Button-1>", reject_request)
-    accept_button.bind("<Button-1>", accept_request)
-
-    root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Form = QtWidgets.QWidget()
+    ui = Ui_Form()
+    ui.setupUi(Form)
+    Form.show()
+    sys.exit(app.exec_())

@@ -1,10 +1,10 @@
 import sys
-import subprocess
 from PyQt5 import QtCore, QtGui, QtWidgets
-import pyrebase
-from functools import partial
 from PyQt5.QtGui import QPixmap
-
+from functools import partial
+from PIL import Image, ImageTk
+import subprocess
+import pyrebase
 
 firebaseConfig = {
     "apiKey": "AIzaSyDh6tLW3lCovQ2j1YZ0dklbppIhHZXUEJE",
@@ -17,17 +17,20 @@ firebaseConfig = {
     "measurementId": "G-9ZFHMKE2FK"
 }
 firebase = pyrebase.initialize_app(firebaseConfig)
-auth = firebase.auth()  # Initialize auth object
 db = firebase.database()
 
 class Ui_ProfilePage(object):
-    def __init__(self, user_id, token, user_email):
+    def __init__(self, user_id, token, user_email, username):
         self.user_id = user_id
         self.token = token
         self.user_email = user_email
+        self.username = username
+        self.user_key = None
 
     def setupUi(self, ProfilePage):
-        self.ProfilePage = ProfilePage  # Store ProfilePage instance
+        self.ProfilePage = ProfilePage
+        ProfilePage.setObjectName("ProfilePage")
+        ProfilePage.resize(1131, 811)
         self.centralwidget = QtWidgets.QWidget(ProfilePage)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -41,25 +44,37 @@ class Ui_ProfilePage(object):
         font.setBold(True)
         self.header_label.setFont(font)
         self.header_label.setText("BobHealthCare")
+
+        header_image_path = "C:/BobHealthCentre/.venv/header.jpg"  # Adjust the path as necessary
+        header_image = QPixmap(header_image_path)
+        self.header_image_label = QtWidgets.QLabel(self.centralwidget)
+        self.header_image_label.setGeometry(QtCore.QRect(0, 0, 1127, 110))
+        self.header_image_label.setPixmap(header_image)
+        self.header_image_label.setScaledContents(True)
+
+        # Menu buttons
         self.menu_button1 = QtWidgets.QPushButton(self.centralwidget)
-        self.menu_button1.setGeometry(QtCore.QRect(20, 80, 120, 30))
-        self.menu_button1.setText("Appointment List")  # Changed label to "Appointment List"
-        self.menu_button1.clicked.connect(partial(self.menu_clicked, "Appointment List"))  # Changed signal handler parameter
+        self.menu_button1.setGeometry(QtCore.QRect(40, 150, 141, 41))
+        self.menu_button1.setText("Appointment List")
+        self.menu_button1.setStyleSheet("background-color: #FFBF10; color: white; font: bold 12px;")
+        self.menu_button1.clicked.connect(partial(self.menu_clicked, "Appointment List"))
 
         self.menu_button2 = QtWidgets.QPushButton(self.centralwidget)
-        self.menu_button2.setGeometry(QtCore.QRect(150, 80, 120, 30))
-        self.menu_button2.setText("Find Doctor")  # Changed label to "Find Doctor"
-        self.menu_button2.clicked.connect(self.open_find_doctor)  # Changed signal handler to open_find_doctor
+        self.menu_button2.setGeometry(QtCore.QRect(210, 150, 141, 41))
+        self.menu_button2.setText("Find Doctor")
+        self.menu_button2.setStyleSheet("background-color: #FFBF10; color: white; font: bold 12px;")
+        self.menu_button2.clicked.connect(self.open_find_doctor)
 
         self.logout_button = QtWidgets.QPushButton(self.centralwidget)
-        self.logout_button.setGeometry(QtCore.QRect(1000, 80, 100, 30))
+        self.logout_button.setGeometry(QtCore.QRect(940, 140, 141, 41))
         self.logout_button.setText("Logout")
-        self.logout_button.clicked.connect(self.menu_clicked)
+        self.logout_button.setStyleSheet("background-color: #FFBF10; color: white; font: bold 12px;")
+        self.logout_button.clicked.connect(self.logout_user)
 
-        # Profile Information Section
+        # Profile information section
         self.profile_label = QtWidgets.QLabel(self.centralwidget)
-        self.profile_label.setGeometry(QtCore.QRect(0, 110, 1131, 661))
-        self.profile_label.setStyleSheet("background-color: #AFE1AF;")
+        self.profile_label.setGeometry(QtCore.QRect(20, 200, 1081, 581))
+        self.profile_label.setStyleSheet("background-color: #cfcfcf;")
 
         self.profile_title_label = QtWidgets.QLabel(self.centralwidget)
         self.profile_title_label.setGeometry(QtCore.QRect(368, 110, 391, 61))
@@ -131,6 +146,9 @@ class Ui_ProfilePage(object):
         except Exception as e:
             print("Error fetching user details:", e)
 
+    def logout_user(self):
+        self.ProfilePage.close()
+
     def update_user_data(self):
         try:
             username = self.name_input.text()
@@ -149,49 +167,28 @@ class Ui_ProfilePage(object):
         except Exception as e:
             print("Error updating user data:", e)
 
-    def open_find_doctor_page(self):
-        try:
-            user_email = self.user_email
-            print(f"Opening finddoctor.py for user with email: {user_email}")
-
-            user = auth.current_user
-            if not user:
-                print("User is not authenticated. Performing logout.")
-                self.logout_user()
-                return
-
-            self.ProfilePage.hide()
-
-            python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"
-            script_path = "C:/BobHealthCentre/.venv/finddoctor.py"
-
-            subprocess.call([python_executable, script_path, user_email])
-            QtWidgets.qApp.quit()
-        except Exception as e:
-            print(f"Exception occurred while opening finddoctor.py: {e}")
-
-    def logout_user(self):
-        try:
-            firebase.auth().sign_out()
-            print("User logged out.")
-        except Exception as e:
-            print("Error logging out user:", e)
+    def open_find_doctor(self):
+        print("Find Doctor button clicked")
+        self.ProfilePage.close()
+        python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"
+        subprocess.call([python_executable, "C:/BobHealthCentre/.venv/finddoctor.py", self.user_id, self.token, self.user_email, self.username])
 
     def menu_clicked(self, menu_name):
-        print("Menu clicked:", menu_name)
+        if menu_name == "Appointment List":
+            self.open_appointment_list()
 
-    def open_find_doctor(self):
-        try:
-            # Call finddoctor.py and pass the user details as arguments
-            subprocess.Popen([sys.executable, "finddoctor.py", self.user_id, self.token, self.user_email])
-        except Exception as e:
-            print(f"Error opening Find Doctor page: {e}")
-
+    def open_appointment_list(self):
+        print("Opening Appointment List")
+        self.ProfilePage.close()
+        python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"
+        script_path = "C:/BobHealthCentre/.venv/appointmentlist.py"
+        arguments = [python_executable, script_path, self.user_id, self.user_email, self.token, self.username]
+        subprocess.call(arguments)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     ProfilePage = QtWidgets.QMainWindow()
-    ui = Ui_ProfilePage("user_id", "token", "user_email")
+    ui = Ui_ProfilePage("user_id", "token", "user_email", "username")
     ui.setupUi(ProfilePage)
 
     ProfilePage.setStyleSheet("QLabel { background-color: #355E3B; color: white; }"
@@ -201,4 +198,3 @@ if __name__ == "__main__":
 
     ProfilePage.show()
     sys.exit(app.exec_())
-

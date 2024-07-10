@@ -139,6 +139,7 @@ class DoctorDashboard:
 
         def submit_prescription_for_id():
             self.submit_prescription(appointment_id, prescription_text.get("1.0", tk.END))
+            prescription_window.destroy()  # Close the prescription window after submitting
 
         submit_button = tk.Button(prescription_window, text="Submit Prescription", command=submit_prescription_for_id)
         submit_button.pack(pady=10)

@@ -1,6 +1,7 @@
 import pyrebase
 from PyQt5 import QtCore, QtGui, QtWidgets
 from login import Ui_Form as LoginUi_Form
+import subprocess
 
 firebaseConfig = {
     "apiKey": "AIzaSyDh6tLW3lCovQ2j1YZ0dklbppIhHZXUEJE",
@@ -161,6 +162,7 @@ class Ui_Form(object):
 
         # Connect the register button to the register function
         self.b2.clicked.connect(self.register_user)
+        self.b1.clicked.connect(self.open_login_page)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -219,6 +221,15 @@ class Ui_Form(object):
         msg.setWindowTitle("Status")
         msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
         msg.exec_()
+
+    def open_login_page(self):
+        # Create an instance of the login page
+        self.login_page = QtWidgets.QWidget()
+        self.login_ui = LoginUi_Form()
+        self.login_ui.setupUi(self.login_page)
+        self.login_page.show()
+        # Close the current registration page
+        Form.close()
 
 
 if __name__ == "__main__":

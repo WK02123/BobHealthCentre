@@ -165,23 +165,6 @@ class Ui_Form(object):
         self.comboBox.addItem("clinic1")
         self.comboBox.addItem("clinic2")
 
-        self.b4 = QtWidgets.QPushButton(self.widget)
-        self.b4.setGeometry(QtCore.QRect(390, 630, 161, 41))
-        font = QtGui.QFont()
-        font.setFamily(".AppleSystemUIFont")
-        font.setBold(True)
-        self.b4.setFont(font)
-        self.b4.setStyleSheet("QPushButton#b4{\n"
-                              "background-color:rgb(255,191,16);\n"
-                              "color:rgb(135,60,0);\n"
-                              "border-radius:5px;\n"
-                              "}\n"
-                              "\n"
-                              "QPushButton#b4:pressed{\n"
-                              "background-color:rgb(255,255,16);\n"
-                              "}\n"
-                              "")
-        self.b4.setObjectName("b4")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -199,7 +182,6 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "🧑‍🧒"))
         self.lineEdit.setPlaceholderText(_translate("Form", "Enter Username"))
         self.lineEdit_5.setPlaceholderText(_translate("Form", "Email"))
-        self.b4.setText(_translate("Form", "L O G I N"))
 
     def register(self):
         username = self.lineEdit.text().strip()
@@ -255,6 +237,7 @@ class Ui_Form(object):
         msg.setText("Registration Successful!")
         msg.setWindowTitle("Success")
         msg.exec_()
+        Form.close()
 
     def show_message(self, message):
         msg = QMessageBox()

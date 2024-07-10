@@ -2,6 +2,8 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QComboBox, QDateEdit, QTextEdit, QLabel
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QDate
+import subprocess
 
 # Firebase initialization with Pyrebase for Realtime Database
 import pyrebase
@@ -21,8 +23,12 @@ firebaseConfig = {
 firebase = pyrebase.initialize_app(firebaseConfig)
 db = firebase.database()
 
-class Ui_Form(object):
-    def setupUi(self, Form, user_id, token, user_email):
+class appointmentUi_Form(object):
+    def setupUi(self, Form, user_id=None, token=None, user_email=None,username=None):
+        self.user_id = user_id
+        self.token = token
+        self.user_email = user_email
+        self.username = username
         Form.setObjectName("Form")
         Form.resize(1000, 700)
 
@@ -65,6 +71,8 @@ class Ui_Form(object):
         self.date_edit.setCalendarPopup(True)
         self.date_edit.setStyleSheet("background-color:rgba(224, 224, 224); color:rgb(255,255,255);")
 
+        self.date_edit.setMinimumDate(QDate.currentDate().addDays(1))
+
         self.labelDescription = QtWidgets.QLabel(self.widget)
         self.labelDescription.setGeometry(QtCore.QRect(165, 475, 200, 40))  # Adjusted the position
         self.labelDescription.setText("Description:")
@@ -90,20 +98,8 @@ class Ui_Form(object):
 
         self.submit_button3 = QtWidgets.QPushButton(self.widget)
         self.submit_button3.setGeometry(QtCore.QRect(30, 150, 150, 50))  # Adjusted the position
-        self.submit_button3.setText("HomePage")
+        self.submit_button3.setText("Go Back")
         self.submit_button3.setStyleSheet(
-            "background-color: #FFBF10; color: #873C00; font-size: 12px; font-weight: bold;")
-
-        self.submit_button4 = QtWidgets.QPushButton(self.widget)
-        self.submit_button4.setGeometry(QtCore.QRect(215, 150, 150, 50))  # Adjusted the position
-        self.submit_button4.setText("find Doctor")
-        self.submit_button4.setStyleSheet(
-            "background-color: #FFBF10; color: #873C00; font-size: 12px; font-weight: bold;")
-
-        self.submit_button5 = QtWidgets.QPushButton(self.widget)
-        self.submit_button5.setGeometry(QtCore.QRect(400, 150, 150, 50))  # Adjusted the position
-        self.submit_button5.setText("Profile")
-        self.submit_button5.setStyleSheet(
             "background-color: #FFBF10; color: #873C00; font-size: 12px; font-weight: bold;")
 
         self.retranslateUi(Form)
@@ -111,10 +107,23 @@ class Ui_Form(object):
 
         # Call load_clinics to populate the clinic combo box
         self.load_clinics()
+        self.submit_button2.clicked.connect(self.logout)
+        self.submit_button3.clicked.connect(self.go_back)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Set Appointment"))
+
+    def go_back(self):
+        print("Go Back button clicked")
+        Form.hide()  # Hide the current form
+        python_executable = "C:/BobHealthCentre/.venv/Scripts/python.exe"  # Adjust path as necessary
+        subprocess.call([python_executable, "C:/BobHealthCentre/.venv/finddoctor2.py", self.user_id, self.token,
+                         self.user_email,self.username])
+
+    def logout(self):
+        print("Logging out...")
+        QtWidgets.qApp.quit()
 
     def load_clinics(self):
         try:
@@ -193,23 +202,24 @@ class Ui_Form(object):
         msg.exec_()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: finddoctor.py <user_id> <token> <user_email>")
+    if len(sys.argv) != 5:
+        print("Usage: finddoctor.py <user_id> <token> <user_email> <username>")
         sys.exit(1)
 
     user_id = sys.argv[1]
     token = sys.argv[2]
     user_email = sys.argv[3]
+    username = sys.argv[4]
 
     # For debugging: print the arguments to verify
     print(f"user_id: {user_id}")
     print(f"token: {token}")
     print(f"user_email: {user_email}")
+    print(f"username: {username}")
 
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
-    ui = Ui_Form()
-    ui.setupUi(Form, user_id, token, user_email)
+    ui = appointmentUi_Form()
+    ui.setupUi(Form, user_id, token, user_email,username)
     Form.show()
     sys.exit(app.exec_())
-

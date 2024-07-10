@@ -5,6 +5,7 @@ from doctordashboard import DoctorDashboard
 from admindashboard import main
 import sys
 import tkinter as tk
+import subprocess
 
 firebaseConfig = {
     "apiKey": "AIzaSyDh6tLW3lCovQ2j1YZ0dklbppIhHZXUEJE",
@@ -23,23 +24,26 @@ db = firebase.database()
 
 class Ui_Form(object):
     def setupUi(self, Form):
+        self.main_window = Form  # Save a reference to the main window
         Form.setObjectName("Form")
-        Form.resize(955, 672)
-        font = QtGui.QFont()
-        font.setBold(False)
-        Form.setFont(font)
+        Form.resize(1000, 750)
+
+        # Create a main vertical layout
+        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        # Create the main widget
         self.widget = QtWidgets.QWidget(Form)
-        self.widget.setGeometry(QtCore.QRect(0, -10, 971, 691))
-        font = QtGui.QFont()
-        font.setFamily("Academy Engraved LET")
-        font.setBold(False)
-        self.widget.setFont(font)
+        self.widget.setObjectName("widget")
         self.widget.setStyleSheet("\n"
                                   "background-color: rgb(88, 161, 255);\n"
                                   "border-radius:20px;")
-        self.widget.setObjectName("widget")
+
+        # Add the widget to the vertical layout
+        self.verticalLayout.addWidget(self.widget)
+
+        # Inside the widget, create your other widgets as before
         self.lineEdit = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit.setEnabled(True)
         self.lineEdit.setGeometry(QtCore.QRect(190, 160, 611, 81))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -54,8 +58,8 @@ class Ui_Form(object):
                                     "padding-bottom:3px;")
         self.lineEdit.setText("")
         self.lineEdit.setObjectName("lineEdit")
+
         self.lineEdit_2 = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit_2.setEnabled(True)
         self.lineEdit_2.setGeometry(QtCore.QRect(190, 270, 611, 81))
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -71,6 +75,7 @@ class Ui_Form(object):
         self.lineEdit_2.setText("")
         self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
         self.lineEdit_2.setObjectName("lineEdit_2")
+
         self.b1 = QtWidgets.QPushButton(self.widget)
         self.b1.setGeometry(QtCore.QRect(400, 380, 201, 61))
         font = QtGui.QFont()
@@ -88,6 +93,7 @@ class Ui_Form(object):
                               "}\n"
                               "")
         self.b1.setObjectName("b1")
+
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setGeometry(QtCore.QRect(450, 50, 101, 81))
         font = QtGui.QFont()
@@ -97,10 +103,12 @@ class Ui_Form(object):
         self.label.setFont(font)
         self.label.setStyleSheet("")
         self.label.setObjectName("label")
+
         self.label_2 = QtWidgets.QLabel(self.widget)
         self.label_2.setGeometry(QtCore.QRect(440, 470, 131, 41))
         self.label_2.setStyleSheet("color:rgb(255,191,16)")
         self.label_2.setObjectName("label_2")
+
         self.b2 = QtWidgets.QPushButton(self.widget)
         self.b2.setGeometry(QtCore.QRect(400, 510, 201, 61))
         font = QtGui.QFont()
@@ -120,6 +128,7 @@ class Ui_Form(object):
                               "}\n"
                               "")
         self.b2.setObjectName("b2")
+
         self.b3 = QtWidgets.QPushButton(self.widget)
         self.b3.setGeometry(QtCore.QRect(400, 580, 201, 61))
         font = QtGui.QFont()
@@ -140,10 +149,34 @@ class Ui_Form(object):
                               "")
         self.b3.setObjectName("b3")
 
+        self.b4 = QtWidgets.QPushButton(self.widget)  # Add a new button
+        self.b4.setGeometry(QtCore.QRect(400, 650, 201, 61))  # Adjust the geometry as needed
+        font = QtGui.QFont()
+        font.setFamily(".AppleSystemUIFont")
+        font.setBold(True)
+        font.setItalic(False)
+        font.setUnderline(False)
+        self.b4.setFont(font)
+        self.b4.setStyleSheet("QPushButton#b4{\n"
+                              "background-color:rgb(255,191,16);\n"
+                              "color:rgb(135,60,0);\n"
+                              "border-radius:5px;\n"
+                              "}\n"
+                              "\n"
+                              "QPushButton#b4:pressed{\n"
+                              "background-color:rgb(255,255,16);\n"
+                              "}\n"
+                              "")
+        self.b4.setObjectName("b4")
+
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
+        # Connect button clicks to their respective functions
+        self.b2.clicked.connect(self.open_register_page)
         self.b1.clicked.connect(self.login)
+        self.b3.clicked.connect(self.open_doctorregister_page)
+        self.b4.clicked.connect(self.new_button_clicked)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -154,7 +187,18 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "B"))
         self.label_2.setText(_translate("Form", "New user?"))
         self.b2.setText(_translate("Form", "Sign Up"))
-        self.b3.setText(_translate("Form", "Guest Log In"))
+        self.b3.setText(_translate("Form", "Doctor Sign Up"))
+        self.b4.setText(_translate("Form", "Clinic Sign Up"))
+
+    def new_button_clicked(self):
+        try:
+            # Get the path to the current Python interpreter
+            python_executable = sys.executable
+
+            # Execute register.py using subprocess with the same Python interpreter
+            subprocess.Popen([python_executable, 'clinicregister.py'])
+        except Exception as e:
+            print("Failed to open clinic register page:", e)
 
     def login(self):
         email = self.lineEdit.text()
@@ -175,6 +219,7 @@ class Ui_Form(object):
                     self.open_profile_page(user_id, token, user_email)  # Pass the required arguments
                 else:
                     print("User role not found or invalid for users.")
+                self.main_window.close()  # Close the login window
                 return
 
             # Try to retrieve user info from 'doctors' branch if not found in 'users'
@@ -187,6 +232,7 @@ class Ui_Form(object):
                             self.open_doctordashboard_page(key)
                         else:
                             print("User role not found or invalid for doctors.")
+                        self.main_window.close()  # Close the login window
                         return
 
             admin_info = db.child("admin").order_by_child("email").equal_to(email).get(token).val()
@@ -195,8 +241,7 @@ class Ui_Form(object):
                     if value['email'] == email:
                         print(f"Successfully logged in as admin: {value}")
                         self.open_admindashboard_page(token, user_email)
-                    else:
-                        print("User role not found or invalid for admin.")
+                        self.main_window.close()  # Close the login window
                         return
 
             print("User not found in both users and doctors branches.")
@@ -207,18 +252,33 @@ class Ui_Form(object):
     def open_admindashboard_page(self, token, user_email):
         try:
             self.admin_dashboard_window = QtWidgets.QMainWindow()
-            self.admin_dashboard = main(token, user_email)  # Pass token and user_email to main
-            self.admin_dashboard.setupUi(self.admin_dashboard_window)
+            self.admin_dashboard = main(token, user_email)  # Assuming main() returns a QWidget
+            self.admin_dashboard.setupUi(
+            self.admin_dashboard_window)  # Assuming setupUi is the method to set up admin dashboard
             self.admin_dashboard_window.show()
+
+            # Close the main window (login window)
+            self.Form.close()
+
         except Exception as e:
             print("Failed to open admin dashboard page:", e)
 
     def open_profile_page(self, user_id, token, user_email):
         try:
-            self.profile_page_window = QtWidgets.QMainWindow()
-            self.profile_page = Ui_ProfilePage(user_id, token, user_email)
-            self.profile_page.setupUi(self.profile_page_window)
-            self.profile_page_window.show()
+            # Fetch additional user details like username from database
+            user_info = db.child("users").child(user_id).get(token).val()
+            if user_info:
+                username = user_info.get("username")  # Assuming username is stored in 'username' field
+                self.profile_page_window = QtWidgets.QMainWindow()
+                self.profile_page = Ui_ProfilePage(user_id, token, user_email, username)
+                self.profile_page.setupUi(self.profile_page_window)
+
+                # Set the window size
+                self.profile_page_window.resize(1120, 750)
+
+                self.profile_page_window.show()
+            else:
+                print("User info not found.")
         except Exception as e:
             print("Failed to open profile page:", e)
 
@@ -230,6 +290,26 @@ class Ui_Form(object):
 
         except Exception as e:
             print("Failed to open doctor dashboard:", e)
+
+    def open_register_page(self):
+        try:
+            # Get the path to the current Python interpreter
+            python_executable = sys.executable
+
+            # Execute register.py using subprocess with the same Python interpreter
+            subprocess.Popen([python_executable, 'register.py'])
+        except Exception as e:
+            print("Failed to open register page:", e)
+
+    def open_doctorregister_page(self):
+        try:
+            # Get the path to the current Python interpreter
+            python_executable = sys.executable
+
+            # Execute register.py using subprocess with the same Python interpreter
+            subprocess.Popen([python_executable, 'doctorregister.py'])
+        except Exception as e:
+            print("Failed to open doctor register page:", e)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
